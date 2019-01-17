@@ -16,12 +16,13 @@ namespace SendSMS
 
             user.EnterLogin();
             user.EnterPassword();
+            user.ConfirmPassword();
             user.EnterEmail();
             user.EnterPhoneNumber();
 
             string adoptedCode = VerificationAccount();
 
-            Console.WriteLine("We send your phone number verification code, please enter");
+            Console.WriteLine("We sent your phone number verification code, please enter");
             string verificationCode = Console.ReadLine();
 
             if (verificationCode == adoptedCode)
