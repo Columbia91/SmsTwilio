@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using Twilio;
+using Twilio; // консоль диспетчера пакетов Install-Package Twilio
 using Twilio.Rest.Api.V2010.Account;
 
 namespace SendSMS
@@ -46,7 +46,7 @@ namespace SendSMS
                     case 2: Console.Write("\nPassword: " + user.Password); break;
                     case 3: Console.Write("\nConfirm Password: " + user.PasswordCopy); break;
                     case 4: Console.Write("\nEmail: " + user.Email); break;
-                    case 5: Console.Write("\nPhone number: " + user.PhoneNumber); break;
+                    case 5: Console.Write("\nPhone number (+XYYYZZZZZZZ): " + user.PhoneNumber); break;
                 }
             }
         }
@@ -138,6 +138,7 @@ namespace SendSMS
         {
             Console.Clear();
             const int FIELD_NUMBER_3 = 3;
+
             Show(user, FIELD_NUMBER_3);
             user.PasswordCopy = Console.ReadLine();
 
@@ -156,8 +157,8 @@ namespace SendSMS
         {
             Console.Clear();
             const int FIELD_NUMBER_4 = 4;
-            Show(user, FIELD_NUMBER_4);
 
+            Show(user, FIELD_NUMBER_4);
             user.Email = Console.ReadLine();
 
             string pattern = @"^(?("")(""[^""]+?""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
@@ -213,7 +214,6 @@ namespace SendSMS
             );
             
             // Console.WriteLine(message.Sid);
-
             return code;
         }
         #endregion

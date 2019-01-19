@@ -19,6 +19,5 @@ namespace SendSMS
         public string PasswordCopy { get => passwordCopy; set => passwordCopy = value; }
         public string Email { get => email; set => email = value; }
         public string PhoneNumber { get => phoneNumber; set => phoneNumber = value; }
-        
     }
 }
