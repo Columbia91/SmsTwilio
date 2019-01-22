@@ -23,28 +23,39 @@ namespace SendSMS
             
             string adoptedCode = VerificationAccount(user);
 
-            Console.Write("\nМы отправили на указанный Вами номер код верификации, введите его ниже\nКод подтверждения: ");
-            string verificationCode = Console.ReadLine();
-
-            if (verificationCode == adoptedCode)
+            Console.WriteLine("\nМы отправили на указанный Вами номер код верификации, введите его ниже...");
+            
+            while (true)
             {
-                Console.Clear();
-                Console.WriteLine("Поздравляем! Вы успешно прошли регистрацию");
+                Console.Write("\n\nКод подтверждения: ");
+                string verificationCode = Console.ReadLine();
+                if (verificationCode == adoptedCode)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Поздравляем! Вы успешно прошли регистрацию");
+                }
+                else
+                {
+                    Console.WriteLine("Неверный код верификации, нажмите Enter чтобы ввести заново...");
+                    Console.ReadKey();
+                    Console.Clear();
+                    Show(user, 5, GiveMeStars(user), GiveMeStars(user));
+                }
             }
 
             Console.ReadLine();
         }
 
         #region Вывод на консоль
-        static void Show(User user, int numb)
+        static void Show(User user, int numb, string stars = "", string stars2 = "")
         {
             for (int i = 0; i < numb; i++)
             {
                 switch (i + 1)
                 {
                     case 1: Console.Write("Login: " + user.Login); break;
-                    case 2: Console.Write("\nPassword: " + user.Password); break;
-                    case 3: Console.Write("\nConfirm Password: " + user.PasswordCopy); break;
+                    case 2: Console.Write("\nPassword: " + stars); break;
+                    case 3: Console.Write("\nConfirm Password: " + stars2); break;
                     case 4: Console.Write("\nEmail: " + user.Email); break;
                     case 5: Console.Write("\nPhone number (+XYYYZZZZZZZ): " + user.PhoneNumber); break;
                 }
@@ -56,7 +67,7 @@ namespace SendSMS
         static void EnterLogin(User user)
         {
             Console.Clear();
-            const int FIELD_NUMBER = 1;
+            const int FIELD_NUMBER = 1, MIN_LOGIN_LENGTH = 3;
 
             Show(user, FIELD_NUMBER);
             user.Login = Console.ReadLine();
@@ -78,6 +89,13 @@ namespace SendSMS
                 Console.ReadKey();
                 EnterLogin(user);
             }
+            if (user.Login.Length < MIN_LOGIN_LENGTH)
+            {
+                Console.WriteLine("Логин слишком короткий, нажмите Enter чтобы ввести заново...");
+                user.Login = "";
+                Console.ReadKey();
+                EnterLogin(user);
+            }
         }
         #endregion
 
@@ -89,8 +107,9 @@ namespace SendSMS
             bool isThereNumber = false, isThereUppercaseLetter = false, isThereLowercaseLetter = false;
 
             Show(user, FIELD_NUMBER_2);
-            user.Password = Console.ReadLine();
-
+            user.Password = HideCharacter();
+            user.Password = user.Password.TrimEnd(user.Password[user.Password.Length - 1]);
+            
             Regex regex = new Regex(@"\W|[А-Яа-я]+");
             MatchCollection matches = regex.Matches(user.Password);
 
@@ -138,9 +157,11 @@ namespace SendSMS
         {
             Console.Clear();
             const int FIELD_NUMBER_3 = 3;
+            string stars = GiveMeStars(user);
 
-            Show(user, FIELD_NUMBER_3);
-            user.PasswordCopy = Console.ReadLine();
+            Show(user, FIELD_NUMBER_3, stars);
+            user.PasswordCopy = HideCharacter();
+            user.PasswordCopy = user.PasswordCopy.TrimEnd(user.PasswordCopy[user.PasswordCopy.Length - 1]);
 
             if (user.Password != user.PasswordCopy)
             {
@@ -157,8 +178,9 @@ namespace SendSMS
         {
             Console.Clear();
             const int FIELD_NUMBER_4 = 4;
+            string stars = GiveMeStars(user);
 
-            Show(user, FIELD_NUMBER_4);
+            Show(user, FIELD_NUMBER_4, stars, stars);
             user.Email = Console.ReadLine();
 
             string pattern = @"^(?("")(""[^""]+?""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
@@ -179,8 +201,9 @@ namespace SendSMS
         {
             Console.Clear();
             const int FIELD_NUMBER_5 = 5;
+            string stars = GiveMeStars(user);
 
-            Show(user, FIELD_NUMBER_5);
+            Show(user, FIELD_NUMBER_5, stars, stars);
             user.PhoneNumber= Console.ReadLine();
 
             string pattern = @"^\+?[7]\d{10}$";
@@ -217,5 +240,31 @@ namespace SendSMS
             return code;
         }
         #endregion
+
+        public static string HideCharacter()
+        {
+            ConsoleKeyInfo key;
+            string code = "";
+            do
+            {
+                key = Console.ReadKey(true);
+                Console.Write("*");
+                code += key.KeyChar;
+            } while (key.Key != ConsoleKey.Enter);
+
+            return code;
+        }
+
+        public static string GiveMeStars(User user)
+        {
+            char[] symbols = new char[user.Password.Length];
+
+            for (int i = 0; i < user.Password.Length; i++)
+            {
+                symbols[i] = '*';
+            }
+            string str = new string(symbols);
+            return str;
+        }
     }
 }
