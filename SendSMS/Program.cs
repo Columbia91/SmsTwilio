@@ -20,14 +20,14 @@ namespace SendSMS
             ConfirmPassword(user);
             EnterEmail(user);
             EnterPhoneNumber(user);
-            
+
             string adoptedCode = VerificationAccount(user);
 
             Console.WriteLine("\nМы отправили на указанный Вами номер код верификации, введите его ниже...");
-            
+
             while (true)
             {
-                Console.Write("\n\nКод подтверждения: ");
+                Console.Write("\nКод подтверждения: ");
                 string verificationCode = Console.ReadLine();
                 if (verificationCode == adoptedCode)
                 {
@@ -103,48 +103,22 @@ namespace SendSMS
         static void EnterPassword(User user)
         {
             Console.Clear();
-            const int FIELD_NUMBER_2 = 2, MIN_PASSWORD_LENGTH = 6;
-            bool isThereNumber = false, isThereUppercaseLetter = false, isThereLowercaseLetter = false;
+            const int FIELD_NUMBER_2 = 2;
 
             Show(user, FIELD_NUMBER_2);
             user.Password = HideCharacter();
             user.Password = user.Password.TrimEnd(user.Password[user.Password.Length - 1]);
-            
-            Regex regex = new Regex(@"\W|[А-Яа-я]+");
-            MatchCollection matches = regex.Matches(user.Password);
 
-            for (int i = 0; i < user.Password.Length; i++)
-            {
-                if (user.Password[i] >= 'A' && user.Password[i] <= 'Z') isThereUppercaseLetter = true;
-                else if (user.Password[i] >= 'a' && user.Password[i] <= 'z') isThereLowercaseLetter = true;
-                else if (user.Password[i] >= '0' && user.Password[i] <= '9') isThereNumber = true;
-            }
-            if (!isThereNumber || !isThereUppercaseLetter || !isThereLowercaseLetter)
-            {
-                Console.WriteLine("Пароль должен содержать цифровой символ, и буквы верхнего, нижнего регистра");
-                user.Password = "";
-                Console.ReadKey();
-                EnterPassword(user);
-            }
+            string pattern = @"(?=^.{6,32}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$";
 
             while (true)
             {
-                if (string.IsNullOrWhiteSpace(user.Password))
-                {
-                    Console.WriteLine("Пароль содержит недопустимые символы, нажмите Enter чтобы ввести заново...");
-                }
-                else if (user.Password.Length < MIN_PASSWORD_LENGTH)
-                {
-                    Console.WriteLine("Длина пароля должна быть больше {0} символов, нажмите Enter чтобы ввести заново...", MIN_PASSWORD_LENGTH);
-                }
-                else if (matches.Count > 0)
-                {
-                    Console.WriteLine("Пароль содержит недопустимые символы, нажмите Enter чтобы ввести заново...");
-                }
+                if (user.Password.Length < 6 || user.Password.Length > 32)
+                    Console.WriteLine("Длина пароля должна быть не меньше 6 символов и не больше 32 символов, нажмите Enter чтобы ввести заново...");
+                else if (!(Regex.IsMatch(user.Password, pattern)))
+                    Console.WriteLine("Пароль должен содержать цифровой символ, и буквы верхнего, нижнего регистра, нажмите Enter чтобы ввести заново...");
                 else
-                {
                     break;
-                }
                 user.Password = "";
                 Console.ReadKey();
                 EnterPassword(user);
@@ -183,10 +157,9 @@ namespace SendSMS
             Show(user, FIELD_NUMBER_4, stars, stars);
             user.Email = Console.ReadLine();
 
-            string pattern = @"^(?("")(""[^""]+?""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
-                @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9]{2,17}))$";
+            string pattern = @"^[-\w.]+@([A-z0-9][-A-z0-9]+\.)+[A-z]{2,4}$";
 
-            if (!(Regex.IsMatch(user.Email, pattern, RegexOptions.IgnoreCase)))
+            if (!(Regex.IsMatch(user.Email, pattern)))
             {
                 Console.WriteLine("Некорректный email, нажмите Enter чтобы ввести заново...");
                 user.Email = "";
@@ -233,7 +206,7 @@ namespace SendSMS
             var message = MessageResource.Create(
                 from: new Twilio.Types.PhoneNumber("+18432585652"),
                 body: code,
-                to: new Twilio.Types.PhoneNumber("+77719777518") // user.PhoneNumber
+                to: new Twilio.Types.PhoneNumber(user.PhoneNumber) // user.PhoneNumber
             );
             
             // Console.WriteLine(message.Sid);
@@ -252,6 +225,7 @@ namespace SendSMS
                 code += key.KeyChar;
             } while (key.Key != ConsoleKey.Enter);
 
+            Console.WriteLine("\n" + code);
             return code;
         }
 
