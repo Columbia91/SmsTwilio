@@ -214,6 +214,7 @@ namespace SendSMS
         }
         #endregion
 
+        #region Скрытие пароля
         public static string HideCharacter()
         {
             ConsoleKeyInfo key;
@@ -228,7 +229,9 @@ namespace SendSMS
             Console.WriteLine("\n" + code);
             return code;
         }
+        #endregion
 
+        #region Звездочки
         public static string GiveMeStars(User user)
         {
             char[] symbols = new char[user.Password.Length];
@@ -240,5 +243,6 @@ namespace SendSMS
             string str = new string(symbols);
             return str;
         }
+        #endregion
     }
 }
