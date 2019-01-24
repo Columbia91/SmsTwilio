@@ -109,14 +109,14 @@ namespace SendSMS
             user.Password = HideCharacter();
             user.Password = user.Password.TrimEnd(user.Password[user.Password.Length - 1]);
 
-            string pattern = @"(?=^.{6,32}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$";
+            string pattern = @"(?=^.{6,32}$)((?=.*\d)(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$";
 
             while (true)
             {
                 if (user.Password.Length < 6 || user.Password.Length > 32)
-                    Console.WriteLine("Длина пароля должна быть не меньше 6 символов и не больше 32 символов, нажмите Enter чтобы ввести заново...");
+                    Console.WriteLine("\nДлина пароля должна быть не меньше 6 символов и не больше 32 символов, нажмите Enter чтобы ввести заново...");
                 else if (!(Regex.IsMatch(user.Password, pattern)))
-                    Console.WriteLine("Пароль должен содержать цифровой символ, и буквы верхнего, нижнего регистра, нажмите Enter чтобы ввести заново...");
+                    Console.WriteLine("\nПароль должен содержать цифровой и спец символы, а также буквы верхнего, нижнего регистра, нажмите Enter чтобы ввести заново...");
                 else
                     break;
                 user.Password = "";
@@ -226,7 +226,7 @@ namespace SendSMS
                 code += key.KeyChar;
             } while (key.Key != ConsoleKey.Enter);
 
-            Console.WriteLine("\n" + code);
+            //Console.WriteLine("\n" + code);
             return code;
         }
         #endregion
